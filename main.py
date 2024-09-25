@@ -13,7 +13,7 @@ def main():
     job = faker.job()
     town = faker.city()
 
-    with open('HUMANS project/letters_mapping.txt') as file:
+    with open('letters_mapping.txt') as file:
         alphabet = file.read()
     alphabet = ast.literal_eval(alphabet)
 
@@ -70,7 +70,7 @@ def main():
         cards_dir.mkdir(parents=True, exist_ok=True)
     # Now render the template into the created folder
     file_operations.render_template(
-        'HUMANS project/template.svg', f'{cards_dir}/{first_name}_{last_name}.svg', context)
+        'template.svg', f'{cards_dir}/{first_name}_{last_name}.svg', context)
 
 
 if __name__ == "__main__":
