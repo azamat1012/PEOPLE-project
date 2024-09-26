@@ -1,12 +1,21 @@
-import file_operations
-from faker import Faker
-from pathlib import Path
-import random
+"""
+This module generates character profiles.
+
+It saves profiles as SVG files using provided templates.
+"""
+
 import ast
+import os
+import random
+
+
+from faker import Faker
+
+import file_operations
 
 
 def main():
-
+    """Generate a character profile and save it as an SVG file."""
     faker = Faker('ru_RU')
     first_name = faker.first_name()
     last_name = faker.last_name()
@@ -14,65 +23,58 @@ def main():
     town = faker.city()
 
     with open('letters_mapping.txt') as file:
-        alphabet = file.read()
-    alphabet = ast.literal_eval(alphabet)
+        alphabet = ast.literal_eval(file.read())
 
-    random_strength = random.randint(3, 18)
-    random_agility = random.randint(3, 18)
-    random_endurance = random.randint(3, 18)
-    random_intelligence = random.randint(3, 18)
-    random_luck = random.randint(3, 18)
+    stats = {stat: random.randint(3, 18) for stat in
+             ['strength', 'agility', 'endurance', 'intelligence', 'luck']}
 
-    skills = ['Стремительный прыжок',
-              'Электрический выстрел',
-              'Ледяной удар',
-              'Стремительный удар',
-              ' Кислотный взгляд',
-              'Тайный побег',
-              'Ледяной выстрел',
-              'Огненный заряд']
-
-    skills = [skill.replace('e', 'e') for skill in skills]
+    skills = [
+        'Стремительный прыжок',
+        'Электрический выстрел',
+        'Ледяной удар',
+        'Стремительный удар',
+        'Кислотный взгляд',
+        'Тайный побег',
+        'Ледяной выстрел',
+        'Огненный заряд'
+    ]
+    updated_skills = [skill.replace('е', 'e') for skill in skills]
 
     runic_skills = []
-    for skill in skills:
+
+    for skill in updated_skills:
         runic_letter = ""
         for letter in skill:
-            if letter in alphabet:
-                runic_letter += alphabet[letter]
-            else:
-                runic_letter += letter
+            runic_letter += alphabet.get(letter, letter)
         runic_skills.append(runic_letter)
 
-    random_skills = random.sample(runic_skills, 3)
+    selected_skills = random.sample(runic_skills, k=3)
 
     context = {
         'first_name': first_name,
         'last_name': last_name,
         'job': job,
         'town': town,
-        'strength': random_strength,
-        'agility': random_agility,
-        'endurance': random_endurance,
-        'intelligence': random_intelligence,
-        'luck': random_luck,
-        'skill_1': random_skills[0],
-        'skill_2': random_skills[1],
-        'skill_3': random_skills[2],
-
-
+        'strength': stats['strength'],
+        'agility': stats['agility'],
+        'endurance': stats['endurance'],
+        'intelligence': stats['intelligence'],
+        'luck': stats['luck'],
+        'skill_1': selected_skills[0],
+        'skill_2': selected_skills[1],
+        'skill_3': selected_skills[2],
     }
-    print(context)
-    current_dir = Path(__file__).parent
-    cards_dir = current_dir / 'Cards'
-    # Create 'Cards' folder if it doesn't exist
-    if not cards_dir.exists():
-        cards_dir.mkdir(parents=True, exist_ok=True)
-    # Now render the template into the created folder
+    cards_dir = os.path.join(os.path.dirname(__file__), 'Cards')
+
+    os.makedirs(cards_dir, exist_ok=True)
+
     file_operations.render_template(
-        'template.svg', f'{cards_dir}/{first_name}_{last_name}.svg', context)
+        'template.svg',
+        f'{cards_dir}/{first_name} {last_name}.svg',
+        context
+    )
 
 
 if __name__ == "__main__":
-    for i in range(10):
+    for _ in range(10):
         main()
