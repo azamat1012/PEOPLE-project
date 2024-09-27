@@ -38,11 +38,10 @@ def main():
         'Ледяной выстрел',
         'Огненный заряд'
     ]
-    updated_skills = [skill.replace('е', 'e') for skill in skills]
 
     runic_skills = []
 
-    for skill in updated_skills:
+    for skill in skills:
         runic_letter = ""
         for letter in skill:
             runic_letter += alphabet.get(letter, letter)
